@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Layout from "../components/layout";
+import Error from './_error';
 import { Component } from 'react';
 import fetch from 'isomorphic-unfetch';
 
@@ -10,6 +11,7 @@ export default class About extends Component {
     // static means it can be executed within or outside the Class. Belongs to About class
     static async getInitialProps() {
         const res = await fetch('https://api.github.com/users/reedbarger');
+        const statusCode = res.status > 200 ? res.status : false;
         const data = await res.json();
         // fetch('https://api.github.com/users/reedbarger')
         // .then(res => res.json())
@@ -18,7 +20,8 @@ export default class About extends Component {
         // })
 
         return {  
-            user: data
+            user: data,
+            statusCode
             // user: 'user'
           }
     }
@@ -33,7 +36,12 @@ export default class About extends Component {
     //     })
     // }
    render() {
-       const { user } = this.props;
+        // desctructured from props
+       const { user, statusCode } = this.props;
+        if(statusCode) {
+            return <Error statusCode={statusCode}/>
+        }
+
        return(
         <Layout title="About">
              
